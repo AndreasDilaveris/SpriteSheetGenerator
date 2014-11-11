@@ -1,0 +1,25 @@
+{
+  "name": "gzip",
+  "version": "0.0.0",
+  "homepage": "https://github.com/AndreasDilaveris/SpriteSheetGenerator",
+  "authors": [
+    "AndreasDilaveris <control@turnoffthe.tv>"
+  ],
+  "description": "spritesheet output dependencies",
+  "keywords": [
+    "spritesheet",
+    "output"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jszip": "Stuk/jszip#~2.4.0",
+    "FileSaver": "*"    
+  }
+}
