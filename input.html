@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		#draggable{
+			height: 150px;
+			border:1px dashed black;
+		}
+		#draggable.over{
+			border:10px dashed black;
+		}		
+	</style>
+</head>
+<body>
+	<input type="file">
+	<div id='draggable'></div>
+	<div id="holder"></div>
+	<script type="text/javascript" src="bower_components/jszip/dist/jszip.js" ></script>
+	<script type="text/javascript" src="bower_components/FileSaver/FileSaver.js" ></script>
+	<script type="text/javascript">
+
+		var dragon;
+		var holder;
+
+		var sprShtX=3;
+		var sprShtY=4;	
+		var cWidth;
+		var cHeight;
+
+		var framerate = 18;
+		var numberOfFrames;
+		var increments;
+		var secincrements;
+
+		var numberOfSpriteSheets;
+		var currentFrame=0;		
+
+
+		var canvases=[];
+
+		var video;
+		var currentTime=0;
+		var duration;
+		var done=false;
+
+
+		window.onload=function(){
+
+			dragon = document.getElementById('draggable');
+			holder = document.getElementById('holder');
+
+			dragon.addEventListener('dragover', drago);
+			dragon.addEventListener('dragenter', drage);
+			dragon.addEventListener('drop', dropper);
+
+
+			function drago(e){
+				e.preventDefault();
+				e.target.className='over';
+			}
+
+			function drage(e){
+				e.preventDefault();
+			}			
+
+			function dropper(e){
+    			e.preventDefault();
+				// var formData = new FormData();
+				// formData.append('file', e.dataTransfer.files[0]);
+				readVideoFile (e.dataTransfer.files[0]);
+			}
+
+			function readVideoFile (file){
+				// var formData = new FormData();
+				// formData.append('file', e.dataTransfer.files[0]);
+			    var reader = new FileReader();
+			    reader.onload = function (event) {
+					video = document.createElement('video');
+					video.addEventListener('canplay',function(e){
+						if(done) return;
+						done=true;
+						cWidth = sprShtX*video.videoWidth;
+						cHeight = sprShtY*video.videoHeight;
+						duration = video.duration;
+						numberOfFrames = framerate*duration;
+						numberOfSpriteSheets = Math.ceil(numberOfFrames/(sprShtX*sprShtY));
+						secincrements = (duration/numberOfFrames);
+						for (var i = 0; i < numberOfSpriteSheets; i++) {
+							createCanvas(cWidth, cHeight);
+						};
+					});
+
+					video.src = event.target.result;
+					video.setAttribute('controls', true);
+					holder.appendChild(video);
+			    };
+    			reader.readAsDataURL(file);					
+			}
+
+			function createCanvas(w, h){
+				var canvas = document.createElement('canvas');
+				canvas.width = w;
+				canvas.height = h;
+				canvas.ctx = canvas.getContext("2d");
+				canvases.push( canvas );
+				holder.parentNode.appendChild(canvas);
+				return canvas
+			}
+
+			function populateCanvas(){
+					
+					var sframe=currentFrame%(sprShtX*sprShtY);
+					var row = Math.floor(sframe/sprShtX);
+					var col = sframe%sprShtX;
+					var currSheet = Math.floor(currentFrame/(sprShtX*sprShtY));
+
+					video.currentTime=currentTime;
+					
+					canvases[currSheet]
+						.ctx
+						.drawImage( 
+							video,
+							col*video.videoWidth,
+							row*video.videoHeight,
+							video.videoWidth,
+							video.videoHeight );
+
+					currentFrame++
+					currentTime+=secincrements
+			};
+
+			function itterate(){
+				setTimeout(function(){
+					populateCanvas();
+					setTimeout(function(){
+						if (currentFrame<=numberOfFrames) itterate() ;
+					}, 100);
+				}, 100);
+			}
+			
+			this.generate = itterate;
+
+			function zipUp(){
+				var zip = new JSZip();
+				zip.file("Hello.txt", "Hello World\n");
+				canvases.forEach(function(el,i){
+					var imgData = el.toDataURL("image/jpeg", .7 ).split(',')[1];
+					zip.file(i+".jpeg", imgData, {base64: true});
+				})
+				// var img = zip.folder("images");
+				// img.file("smile.gif", imgData, {base64: true});
+				var content = zip.generate({type:"blob"});
+				// see FileSaver.js
+				saveAs(content, "example.zip");
+			}
+
+			this.z= zipUp;			
+
+		}
+	</script>
+</body>
+</html>
