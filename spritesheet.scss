@@ -1,18 +1,17 @@
-@import "compass/css3/box-sizing";
 @import "compass/css3/transform";
 @import "compass/css3/animation";
 
 $width:300px;
-$height:250px;
+$height:600px;
 
 $row-length:3;
-$row:4;
+$row:2;
 
 $frames:$row-length*$row;
 
 // either
 
-$fps:12;
+$fps:10;
 
 // or ?
 

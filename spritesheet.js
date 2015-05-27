@@ -19,7 +19,7 @@ function SpriteSheetAnimator (bannerTools){
           //triggerCopy(spAnimator.stack.current);          
 
           if(spAnimator.stack.current >= spAnimator.sheetsY.length-1) {
-            TweenLite.delayedCall( 1 , creative.sequence );
+            console.log('finished');
           } else{
             spAnimator.stack.prev = (spAnimator.stack.current > 0) ? spAnimator.sheetsY[ spAnimator.stack.current-1 ] : spAnimator.sheetsY[ spAnimator.stack.current ];
             spAnimator.stack.current++;
@@ -53,6 +53,17 @@ function SpriteSheetAnimator (bannerTools){
       if(e.animationName=='animation-y'){
           //console.log('stack itteration (end of sheet)');
       }
+    }
+
+    // this needs work
+    spAnimator.stack.callback=function(callback, context){
+      console.log(callback);
+      spAnimator.stack._callback = callback;
+      spAnimator.stack._context = context;
+    } 
+
+    function onEnd(){
+      spAnimator.stack._callback.call(spAnimator.stack._context);
     }
 
     spAnimator.stack.addEventListener('animationstart', spAnimator.stack.start, true );
