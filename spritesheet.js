@@ -1,31 +1,33 @@
-    cEl = {
-      animation: document.querySelectorAll('.animation')[0],
-      
+function SpriteSheetAnimator (bannerTools){ 
+
+    var bt = (bannerTools)?bannerTools:new BannerTools;
+
+    var spAnimator = {
+      spritesheet: document.querySelectorAll('.spritesheet')[0],
       stack: document.querySelectorAll('.sprite-container')[0],
 
       sheetsX: Array.prototype.slice.call(document.querySelectorAll('.x-axis-animation')),
       sheetsY: Array.prototype.slice.call(document.querySelectorAll('.y-axis-animation'))
-      
     };
+    console.log(spAnimator.stack)
+    spAnimator.stack.current = 0   
 
-    cEl.stack.current = 0   
-
-    cEl.stack.finish = function(e){
+    spAnimator.stack.finish = function(e){
        //e.stopPropagation();
       if(e.animationName=='animation-x'){
           
-          //triggerCopy(cEl.stack.current);          
+          //triggerCopy(spAnimator.stack.current);          
 
-          if(cEl.stack.current >= cEl.sheetsY.length-1) {
+          if(spAnimator.stack.current >= spAnimator.sheetsY.length-1) {
             TweenLite.delayedCall( 1 , creative.sequence );
           } else{
-            cEl.stack.prev = (cEl.stack.current > 0) ? cEl.sheetsY[ cEl.stack.current-1 ] : cEl.sheetsY[ cEl.stack.current ];
-            cEl.stack.current++;
-            cEl.stack.cur = cEl.sheetsY[ cEl.stack.current ];
-            if(cEl.stack.current > 1 ){ 
-              bt.removeClass(cEl.stack.prev, 'current');
+            spAnimator.stack.prev = (spAnimator.stack.current > 0) ? spAnimator.sheetsY[ spAnimator.stack.current-1 ] : spAnimator.sheetsY[ spAnimator.stack.current ];
+            spAnimator.stack.current++;
+            spAnimator.stack.cur = spAnimator.sheetsY[ spAnimator.stack.current ];
+            if(spAnimator.stack.current > 1 ){ 
+              bt.removeClass(spAnimator.stack.prev, 'current');
               }         
-            bt.addClass(cEl.stack.cur, 'current');
+            bt.addClass(spAnimator.stack.cur, 'current');
           }        
       }
       if(e.animationName=='animation-y'){ 
@@ -33,7 +35,7 @@
       }
     }
 
-    cEl.stack.start = function(e){
+    spAnimator.stack.start = function(e){
       if(e.animationName=='animation-x'){
         //console.log('sheet start');    
       }
@@ -42,7 +44,7 @@
       }        
     } 
 
-    cEl.stack.sheets = function(e){
+    spAnimator.stack.sheets = function(e){
       // itteration tick is for rows
       if(e.animationName=='animation-x'){
         //console.log('sheet itteration (end of row)');
@@ -53,11 +55,14 @@
       }
     }
 
-    cEl.stack.addEventListener('animationstart', cEl.stack.start, true );
-    cEl.stack.addEventListener('webkitAnimationStart', cEl.stack.start, true );        
+    spAnimator.stack.addEventListener('animationstart', spAnimator.stack.start, true );
+    spAnimator.stack.addEventListener('webkitAnimationStart', spAnimator.stack.start, true );        
 
-    cEl.stack.addEventListener('animationend', cEl.stack.finish, true );
-    cEl.stack.addEventListener('webkitAnimationEnd', cEl.stack.finish, true );
+    spAnimator.stack.addEventListener('animationend', spAnimator.stack.finish, true );
+    spAnimator.stack.addEventListener('webkitAnimationEnd', spAnimator.stack.finish, true );
 
-    cEl.stack.addEventListener('animationiteration', cEl.stack.sheets, true );
-    cEl.stack.addEventListener('webkitAnimationIteration', cEl.stack.sheets, true ); 
+    spAnimator.stack.addEventListener('animationiteration', spAnimator.stack.sheets, true );
+    spAnimator.stack.addEventListener('webkitAnimationIteration', spAnimator.stack.sheets, true );
+
+    return spAnimator;
+}     

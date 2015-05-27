@@ -1,0 +1,89 @@
+@import "compass/css3/box-sizing";
+@import "compass/css3/transform";
+@import "compass/css3/animation";
+
+$width:300px;
+$height:250px;
+
+$row-length:3;
+$row:4;
+
+$frames:$row-length*$row;
+
+// either
+
+$fps:12;
+
+// or ?
+
+$secs:$frames/$fps*1s;
+$msecs:$frames/$fps*1000ms;
+
+// how many seconds to complete row
+$msecs-row:$row-length/$fps*1000ms;
+
+// animation mechanics
+// mixin further abstracting , adding keypoints and parsing property
+
+@include keyframes(animation-x){
+	0% { @include transform(translateX(0%)); }
+	100% { @include transform(translateX(-100%)); }
+}
+
+@include keyframes(animation-y){
+	0% { @include transform(translateY(0%)); }
+	100% { @include transform(translateY(-100%)); }
+}
+
+.spritesheet{
+	position: absolute;
+
+	width: $width;
+	height: $height;
+	overflow: hidden;
+	//position: relative;
+
+	.sprite-container{
+		position: absolute;
+		left:0%;
+		top:0%;
+		
+		.y-axis-animation{
+			position:absolute;
+			width: $width*$row-length;
+			height: $height*$row;
+			opacity: 0;
+		}
+
+		.x-axis-animation{
+			img{
+				display: block;
+			}
+		}
+		 .current {
+			opacity: 1;
+		}		
+
+	}
+
+	&.start{ 
+		.sprite-container{
+			left:100%;
+			top:100%;
+		}
+		/* animate sheet set */
+		.y-axis-animation.current{
+			@include animation(animation-y $msecs steps($row, start));
+			@include animation-iteration-count(1);
+			@include animation-fill-mode(forwards);	
+		}
+
+		/* animate sheet */
+		.current .x-axis-animation {
+			@include animation(animation-x $msecs-row steps($row-length, start));
+			@include animation-iteration-count($row);
+			@include animation-fill-mode(forwards);			
+		}						
+	}						
+
+}
